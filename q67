@@ -1,0 +1,78 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 100
+
+// Stack
+int stack[MAX];
+int top = -1;
+
+void push(int x) {
+    stack[++top] = x;
+}
+
+// DFS function
+void dfs(int node, int visited[], int** adj, int* adjSize) {
+    visited[node] = 1;
+
+    for (int i = 0; i < adjSize[node]; i++) {
+        int neighbor = adj[node][i];
+        if (!visited[neighbor]) {
+            dfs(neighbor, visited, adj, adjSize);
+        }
+    }
+
+    // push after visiting all neighbors
+    push(node);
+}
+
+// Topological Sort using DFS
+void topoSort(int V, int** adj, int* adjSize) {
+    int visited[MAX] = {0};
+
+    for (int i = 0; i < V; i++) {
+        if (!visited[i]) {
+            dfs(i, visited, adj, adjSize);
+        }
+    }
+
+    // Print stack in reverse (topological order)
+    printf("Topological Order: ");
+    while (top != -1) {
+        printf("%d ", stack[top--]);
+    }
+    printf("\n");
+}
+
+// Driver
+int main() {
+    int V = 6;
+
+    // adjacency list
+    int* adj[MAX];
+    int adjSize[MAX] = {0};
+
+    for (int i = 0; i < V; i++) {
+        adj[i] = (int*)malloc(V * sizeof(int));
+    }
+
+    // Example graph:
+    // 5 → 2, 5 → 0
+    // 4 → 0, 4 → 1
+    // 2 → 3
+    // 3 → 1
+
+    adj[5][adjSize[5]++] = 2;
+    adj[5][adjSize[5]++] = 0;
+
+    adj[4][adjSize[4]++] = 0;
+    adj[4][adjSize[4]++] = 1;
+
+    adj[2][adjSize[2]++] = 3;
+
+    adj[3][adjSize[3]++] = 1;
+
+    topoSort(V, adj, adjSize);
+
+    return 0;
+}
